@@ -122,6 +122,15 @@ function QRCodeBlock() {
       }}>
         save as PNG
       </button>
+      <span style={{
+        color: "#999",
+        fontSize: 10,
+        fontFamily: "'IBM Plex Mono', monospace",
+        textAlign: "center",
+        lineHeight: 1.4,
+      }}>
+        on iPhone, long-press the QR code and tap Save to Photos
+      </span>
     </div>
   );
 }
