@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import QRCode from "qrcode";
 import Link from "next/link";
 import {
   loadConfig,
@@ -50,6 +51,77 @@ function PinGate({ config, onUnlock }) {
           enter
         </button>
       </div>
+    </div>
+  );
+}
+
+// ─── QR Code Block ───
+function QRCodeBlock() {
+  const [dataUrl, setDataUrl] = useState(null);
+  const [pollUrl, setPollUrl] = useState("");
+
+  useEffect(() => {
+    const url = window.location.origin;
+    setPollUrl(url);
+    QRCode.toDataURL(url, {
+      width: 800,
+      margin: 2,
+      color: { dark: "#000000", light: "#ffffff" },
+    }).then(setDataUrl);
+  }, []);
+
+  const downloadPNG = useCallback(async () => {
+    const canvas = document.createElement("canvas");
+    await QRCode.toCanvas(canvas, pollUrl, {
+      width: 800,
+      margin: 2,
+      color: { dark: "#000000", light: "#ffffff" },
+    });
+    const link = document.createElement("a");
+    link.download = "beer-poll-qr.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }, [pollUrl]);
+
+  if (!dataUrl) return null;
+
+  return (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 12,
+      background: "#fff",
+      borderRadius: 4,
+      padding: 20,
+    }}>
+      <img
+        src={dataUrl}
+        alt="Poll QR code"
+        style={{ width: 240, height: 240, imageRendering: "pixelated" }}
+      />
+      <span style={{
+        color: "#555",
+        fontSize: 11,
+        fontFamily: "'IBM Plex Mono', monospace",
+        wordBreak: "break-all",
+        textAlign: "center",
+      }}>
+        {pollUrl}
+      </span>
+      <button onClick={downloadPNG} style={{
+        background: "#0c0c0c",
+        border: "none",
+        borderRadius: 2,
+        padding: "8px 20px",
+        color: "#ccc",
+        fontSize: 12,
+        fontWeight: 500,
+        cursor: "pointer",
+        fontFamily: "'IBM Plex Mono', monospace",
+      }}>
+        save as PNG
+      </button>
     </div>
   );
 }
@@ -208,6 +280,8 @@ function ConfigTab({ config, setConfig }) {
           {config.isLive ? "close poll" : "go live"}
         </button>
       </div>
+
+      <QRCodeBlock />
 
       {beers.length < 4 && (
         <p style={styles.warn}>Add at least 4 beers to run the poll.</p>
