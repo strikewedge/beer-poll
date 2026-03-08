@@ -33,7 +33,7 @@ function PinGate({ config, onUnlock }) {
   return (
     <div style={styles.dashWrap}>
       <div style={styles.pinBox}>
-        <h2 style={styles.pinTitle}>› enter pin</h2>
+        <h2 style={styles.pinTitle}>Enter PIN</h2>
         <input
           type="tel"
           maxLength={6}
@@ -42,7 +42,7 @@ function PinGate({ config, onUnlock }) {
           onKeyDown={(e) => e.key === "Enter" && submit()}
           style={{
             ...styles.pinInput,
-            borderColor: err ? "#e74c3c" : "#333",
+            borderColor: err ? "#ff3b30" : "#d2d2d7",
           }}
           placeholder="• • • •"
           autoFocus
@@ -90,10 +90,10 @@ function QRCodeBlock() {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 12,
-      background: "#fff",
-      borderRadius: 4,
-      padding: 20,
+      gap: 14,
+      background: "#f5f5f7",
+      borderRadius: 16,
+      padding: 24,
     }}>
       <img
         src={dataUrl}
@@ -101,35 +101,35 @@ function QRCodeBlock() {
         style={{ width: 240, height: 240, imageRendering: "pixelated" }}
       />
       <span style={{
-        color: "#555",
-        fontSize: 11,
-        fontFamily: "'IBM Plex Mono', monospace",
+        color: "#86868b",
+        fontSize: 13,
+        fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
         wordBreak: "break-all",
         textAlign: "center",
       }}>
         {pollUrl}
       </span>
       <button onClick={downloadPNG} style={{
-        background: "#0c0c0c",
+        background: "#000",
         border: "none",
-        borderRadius: 2,
-        padding: "8px 20px",
-        color: "#ccc",
-        fontSize: 12,
-        fontWeight: 500,
+        borderRadius: 10,
+        padding: "10px 24px",
+        color: "#fff",
+        fontSize: 14,
+        fontWeight: 600,
         cursor: "pointer",
-        fontFamily: "'IBM Plex Mono', monospace",
+        fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
       }}>
-        save as PNG
+        Save as PNG
       </button>
       <span style={{
-        color: "#999",
-        fontSize: 10,
-        fontFamily: "'IBM Plex Mono', monospace",
+        color: "#86868b",
+        fontSize: 12,
+        fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
         textAlign: "center",
         lineHeight: 1.4,
       }}>
-        on iPhone, long-press the QR code and tap Save to Photos
+        On iPhone, long-press the QR code and tap Save to Photos
       </span>
     </div>
   );
@@ -209,9 +209,9 @@ function ConfigTab({ config, setConfig }) {
               onClick={() => setNumPer(n)}
               style={{
                 ...styles.numBtn,
-                background: numPer === n ? "#4af626" : "#161616",
-                color: numPer === n ? "#000" : "#ccc",
-                borderColor: numPer === n ? "#4af626" : "#2a2a2a",
+                background: numPer === n ? "#000" : "#f5f5f7",
+                color: numPer === n ? "#fff" : "#1d1d1f",
+                borderColor: numPer === n ? "#000" : "#d2d2d7",
               }}
             >
               {n}
@@ -283,7 +283,7 @@ function ConfigTab({ config, setConfig }) {
           onClick={toggleLive}
           style={{
             ...styles.liveBtn,
-            background: config.isLive ? "#e74c3c" : "#27ae60",
+            background: config.isLive ? "#ff3b30" : "#34c759",
           }}
         >
           {config.isLive ? "close poll" : "go live"}
@@ -355,7 +355,7 @@ function ResultsTab({ config, votes, setVotes }) {
     <div style={styles.resultsWrap}>
       {votes.length >= 10 && top2.length === 2 && (
         <div style={styles.heroBox}>
-          <p style={styles.heroLabel}>// your 2 beers</p>
+          <p style={styles.heroLabel}>Top 2 beers</p>
           <p style={styles.heroName}>{top2[0].name}</p>
           <p style={styles.heroName}>{top2[1].name}</p>
         </div>
@@ -396,7 +396,7 @@ function ResultsTab({ config, votes, setVotes }) {
                   ...styles.barFill,
                   width: `${(s.winRate / maxRate) * 100}%`,
                   background:
-                    i === 0 ? "#4af626" : i === 1 ? "#2db818" : "#333",
+                    i === 0 ? "#1d1d1f" : i === 1 ? "#86868b" : "#d2d2d7",
                 }}
               />
             </div>
@@ -482,15 +482,15 @@ export default function DashboardPage() {
   return (
     <div style={styles.dashWrap}>
       <div style={styles.dashHeader}>
-        <h1 style={styles.dashTitle}>› dashboard</h1>
+        <h1 style={styles.dashTitle}>Dashboard</h1>
         <div style={styles.tabRow}>
           <button
             onClick={() => setTab("results")}
             style={{
               ...styles.tab,
               borderBottomColor:
-                tab === "results" ? "#4af626" : "transparent",
-              color: tab === "results" ? "#4af626" : "#555",
+                tab === "results" ? "#1d1d1f" : "transparent",
+              color: tab === "results" ? "#1d1d1f" : "#86868b",
             }}
           >
             Results
@@ -500,8 +500,8 @@ export default function DashboardPage() {
             style={{
               ...styles.tab,
               borderBottomColor:
-                tab === "config" ? "#4af626" : "transparent",
-              color: tab === "config" ? "#4af626" : "#555",
+                tab === "config" ? "#1d1d1f" : "transparent",
+              color: tab === "config" ? "#1d1d1f" : "#86868b",
             }}
           >
             Configure

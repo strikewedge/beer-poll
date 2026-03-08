@@ -70,7 +70,7 @@ export default function PollPage() {
   if (!config || !config.isLive) {
     return (
       <div style={styles.pollWrap}>
-        <p style={styles.closedText}>poll closed_</p>
+        <p style={styles.closedText}>Poll closed</p>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function PollPage() {
       <div style={styles.pollWrap}>
         <div style={styles.flashWrap}>
           <span style={styles.flashIcon}>🍺</span>
-          <p style={styles.flashText}>vote recorded_</p>
+          <p style={styles.flashText}>Vote recorded</p>
         </div>
       </div>
     );
@@ -91,7 +91,7 @@ export default function PollPage() {
       <div style={styles.pollWrap}>
         <div style={styles.flashWrap}>
           <span style={styles.flashIcon}>🍺</span>
-          <p style={styles.flashText}>thanks for voting_</p>
+          <p style={styles.flashText}>Thanks for voting</p>
         </div>
       </div>
     );
@@ -99,9 +99,7 @@ export default function PollPage() {
 
   return (
     <div style={styles.pollWrap}>
-      <h1 style={styles.pollQuestion}>
-        <span style={{ color: "#4af626" }}>›</span> {config.question}
-      </h1>
+      <h1 style={styles.pollQuestion}>{config.question}</h1>
       <div style={styles.optionsWrap}>
         {options.map((beer) => (
           <button
@@ -112,8 +110,8 @@ export default function PollPage() {
               Object.assign(e.target.style, styles.optionBtnHover)
             }
             onMouseLeave={(e) => {
-              e.target.style.background = "#161616";
-              e.target.style.borderColor = "#2a2a2a";
+              e.target.style.background = "#fff";
+              e.target.style.borderColor = "#d2d2d7";
               e.target.style.transform = "none";
             }}
           >
@@ -125,12 +123,10 @@ export default function PollPage() {
           onClick={() => handleVote("__none__")}
           style={styles.noneBtn}
           onMouseEnter={(e) => {
-            e.target.style.background = "#161616";
-            e.target.style.borderColor = "#444";
+            e.target.style.background = "#f5f5f7";
           }}
           onMouseLeave={(e) => {
             e.target.style.background = "transparent";
-            e.target.style.borderColor = "#222";
           }}
         >
           none of these
@@ -140,15 +136,15 @@ export default function PollPage() {
         href="/dashboard"
         style={{
           position: "fixed",
-          bottom: 8,
-          right: 8,
+          bottom: 12,
+          right: 12,
           background: "none",
           border: "none",
-          color: "#333",
-          fontSize: 10,
+          color: "#d2d2d7",
+          fontSize: 12,
           cursor: "pointer",
-          opacity: 0.3,
           textDecoration: "none",
+          fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
         }}
       >
         admin
