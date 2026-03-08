@@ -140,7 +140,6 @@ function ConfigTab({ config, setConfig }) {
   const [q, setQ] = useState(config.question);
   const [beers, setBeers] = useState(config.beers);
   const [newName, setNewName] = useState("");
-  const [newStyle, setNewStyle] = useState("");
   const [pin, setPin] = useState(config.pin);
   const [numPer, setNumPer] = useState(config.numPerVote);
   const [saved, setSaved] = useState(false);
@@ -149,14 +148,9 @@ function ConfigTab({ config, setConfig }) {
     if (!newName.trim()) return;
     setBeers([
       ...beers,
-      {
-        id: Date.now().toString(),
-        name: newName.trim(),
-        style: newStyle.trim(),
-      },
+      { id: Date.now().toString(), name: newName.trim() },
     ]);
     setNewName("");
-    setNewStyle("");
   };
 
   const removeBeer = (id) => setBeers(beers.filter((b) => b.id !== id));
@@ -239,12 +233,7 @@ function ConfigTab({ config, setConfig }) {
         <div style={styles.beerList}>
           {beers.map((b) => (
             <div key={b.id} style={styles.beerRow}>
-              <div>
-                <span style={styles.beerRowName}>{b.name}</span>
-                {b.style && (
-                  <span style={styles.beerRowStyle}> — {b.style}</span>
-                )}
-              </div>
+              <span style={styles.beerRowName}>{b.name}</span>
               <button
                 onClick={() => removeBeer(b.id)}
                 style={styles.removeBtn}
@@ -256,17 +245,10 @@ function ConfigTab({ config, setConfig }) {
         </div>
         <div style={styles.addRow}>
           <input
-            style={{ ...styles.textInput, flex: 2 }}
+            style={{ ...styles.textInput, flex: 1, minWidth: 0 }}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Beer name"
-            onKeyDown={(e) => e.key === "Enter" && addBeer()}
-          />
-          <input
-            style={{ ...styles.textInput, flex: 1 }}
-            value={newStyle}
-            onChange={(e) => setNewStyle(e.target.value)}
-            placeholder="Style"
             onKeyDown={(e) => e.key === "Enter" && addBeer()}
           />
           <button onClick={addBeer} style={styles.addBtn}>

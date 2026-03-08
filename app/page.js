@@ -185,7 +185,6 @@ export default function PollPage() {
             }}
           >
             <span style={styles.beerName}>{beer.name}</span>
-            {beer.style && <span style={styles.beerStyle}>{beer.style}</span>}
           </button>
         ))}
         <button
