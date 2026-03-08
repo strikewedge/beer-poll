@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import QRCode from "qrcode";
 import Link from "next/link";
 import {
@@ -58,80 +58,23 @@ function PinGate({ config, onUnlock }) {
 // ─── QR Code Block ───
 function QRCodeBlock() {
   const [dataUrl, setDataUrl] = useState(null);
-  const [pollUrl, setPollUrl] = useState("");
 
   useEffect(() => {
-    const url = window.location.origin;
-    setPollUrl(url);
-    QRCode.toDataURL(url, {
+    QRCode.toDataURL(window.location.origin, {
       width: 800,
       margin: 2,
       color: { dark: "#000000", light: "#ffffff" },
     }).then(setDataUrl);
   }, []);
 
-  const downloadPNG = useCallback(async () => {
-    const canvas = document.createElement("canvas");
-    await QRCode.toCanvas(canvas, pollUrl, {
-      width: 800,
-      margin: 2,
-      color: { dark: "#000000", light: "#ffffff" },
-    });
-    const link = document.createElement("a");
-    link.download = "beer-poll-qr.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }, [pollUrl]);
-
   if (!dataUrl) return null;
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 14,
-      background: "#f5f5f7",
-      borderRadius: 16,
-      padding: 24,
-    }}>
-      <img
-        src={dataUrl}
-        alt="Poll QR code"
-        style={{ width: 240, height: 240, imageRendering: "pixelated" }}
-      />
-      <span style={{
-        color: "#86868b",
-        fontSize: 13,
-        fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        wordBreak: "break-all",
-        textAlign: "center",
-      }}>
-        {pollUrl}
-      </span>
-      <button onClick={downloadPNG} style={{
-        background: "#000",
-        border: "none",
-        borderRadius: 10,
-        padding: "10px 24px",
-        color: "#fff",
-        fontSize: 14,
-        fontWeight: 600,
-        cursor: "pointer",
-        fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }}>
-        Save as PNG
-      </button>
-      <span style={{
-        color: "#86868b",
-        fontSize: 12,
-        fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        textAlign: "center",
-        lineHeight: 1.4,
-      }}>
-        On iPhone, long-press the QR code and tap Save to Photos
-      </span>
-    </div>
+    <img
+      src={dataUrl}
+      alt="Poll QR code"
+      style={{ width: 240, height: 240, imageRendering: "pixelated", alignSelf: "center" }}
+    />
   );
 }
 
