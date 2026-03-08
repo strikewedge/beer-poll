@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { loadConfig, recordVote } from "@/lib/api";
 import styles from "@/lib/styles";
@@ -21,42 +21,108 @@ function hasVotedCookie() {
     .some((c) => c.trim().startsWith("beer-poll-voted="));
 }
 
+function getKioskState() {
+  if (typeof sessionStorage === "undefined") return null;
+  try {
+    const v = sessionStorage.getItem("beer-poll-kiosk");
+    return v ? JSON.parse(v) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setKioskState(pin) {
+  sessionStorage.setItem("beer-poll-kiosk", JSON.stringify({ pin }));
+}
+
+function clearKioskState() {
+  sessionStorage.removeItem("beer-poll-kiosk");
+}
+
+const subtleLink = {
+  position: "fixed",
+  bottom: 12,
+  background: "none",
+  border: "none",
+  color: "#d2d2d7",
+  fontSize: 12,
+  cursor: "pointer",
+  textDecoration: "none",
+  fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+};
+
 export default function PollPage() {
   const [config, setConfig] = useState(null);
   const [options, setOptions] = useState([]);
   const [voted, setVoted] = useState(false);
   const [flash, setFlash] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [kiosk, setKiosk] = useState(null);
+
+  const pickNewOptions = useCallback(
+    (cfg) => {
+      const c = cfg || config;
+      if (c && c.beers.length >= 4) {
+        const shuffled = shuffleArray(c.beers);
+        setOptions(shuffleArray(shuffled.slice(0, c.numPerVote || 3)));
+      }
+    },
+    [config]
+  );
 
   useEffect(() => {
-    if (hasVotedCookie()) {
+    const stored = getKioskState();
+    if (stored) {
+      setKiosk(stored);
+    } else if (hasVotedCookie()) {
       setVoted(true);
     }
     loadConfig()
       .then((cfg) => {
         setConfig(cfg);
-        if (cfg && cfg.beers.length >= 4) {
-          const shuffled = shuffleArray(cfg.beers);
-          setOptions(shuffleArray(shuffled.slice(0, cfg.numPerVote || 3)));
-        }
+        pickNewOptions(cfg);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleVote = async (picked) => {
-    if (voted || flash) return;
+    if (flash) return;
+    if (!kiosk && voted) return;
     setFlash(true);
     const result = await recordVote(
       picked,
-      options.map((o) => o.name)
+      options.map((o) => o.name),
+      kiosk?.pin
     ).catch(console.error);
-    if (result?.alreadyVoted) {
-      setVoted(true);
-    } else {
+    if (!kiosk) {
       setVoted(true);
     }
-    setTimeout(() => setFlash(false), 1500);
+    setTimeout(() => {
+      setFlash(false);
+      if (kiosk) {
+        pickNewOptions(config);
+      }
+    }, 1500);
+  };
+
+  const toggleKiosk = () => {
+    if (kiosk) {
+      const entered = prompt("Enter PIN to exit kiosk mode");
+      if (entered && entered === config?.pin) {
+        clearKioskState();
+        setKiosk(null);
+        if (hasVotedCookie()) setVoted(true);
+      }
+    } else {
+      const entered = prompt("Enter PIN to enable kiosk mode");
+      if (entered && entered === config?.pin) {
+        const state = { pin: entered };
+        setKioskState(entered);
+        setKiosk(state);
+        setVoted(false);
+      }
+    }
   };
 
   if (loading) {
@@ -82,11 +148,14 @@ export default function PollPage() {
           <span style={styles.flashIcon}>🍺</span>
           <p style={styles.flashText}>Vote recorded</p>
         </div>
+        {kiosk && (
+          <span style={{ ...subtleLink, left: 12 }}>kiosk mode</span>
+        )}
       </div>
     );
   }
 
-  if (voted) {
+  if (!kiosk && voted) {
     return (
       <div style={styles.pollWrap}>
         <div style={styles.flashWrap}>
@@ -132,21 +201,10 @@ export default function PollPage() {
           none of these
         </button>
       </div>
-      <Link
-        href="/dashboard"
-        style={{
-          position: "fixed",
-          bottom: 12,
-          right: 12,
-          background: "none",
-          border: "none",
-          color: "#d2d2d7",
-          fontSize: 12,
-          cursor: "pointer",
-          textDecoration: "none",
-          fontFamily: "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        }}
-      >
+      <button onClick={toggleKiosk} style={{ ...subtleLink, left: 12 }}>
+        {kiosk ? "kiosk mode" : "kiosk"}
+      </button>
+      <Link href="/dashboard" style={{ ...subtleLink, right: 12 }}>
         admin
       </Link>
     </div>
